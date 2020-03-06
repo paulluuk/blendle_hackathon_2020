@@ -11,7 +11,7 @@ class Fighter:
         self.animations = self.createAnimations(path)
         self.x = 0
         self.y = 0
-        self.brain = self.createBrain(path)
+        self.brainCMD,self.brainPATH = self.createBrain(path)
         self.minX = 0
         self.maxX = 0
         self.health = 100
@@ -36,36 +36,41 @@ class Fighter:
         self.disabled = False
 
     def createBrain(self, path):
-        class brain:
-            def __init__(self, fighter):
-                self.fighter = fighter
-                self.options = []
-
-            def giveOptions(self, options):
-                self.options = options
-
-            def getAction(self):
-                distance = self.fighter.getDist()
-                if distance > self.fighter.hitDistance and "walk_right" in self.options:
-                    return "walk_right"
-                elif distance < -self.fighter.hitDistance and "walk_left" in self.options:
-                    return "walk_left"
-                elif abs(distance) <= self.fighter.hitDistance and "punch" in self.options:
-                    return "punch"
+        brain_config = os.path.join(path, "code", "config.txt")
+        brain_file = None
+        with open(brain_config, "r") as config:
+            lines = config.readlines()
+            for line in lines:
+                if line.startswith("#"):
+                    pass
                 else:
-                    return "stand"
+                    brain_file = line.strip()
+                    break
+        if not brain_file:
+            raise(Exception("Could not determine a brain file location inside {}".format(brain_config)))
+        extension = brain_file.split(".")[-1]
+        if extension == "py":
+            brain_cmd = "python"
+        elif extension == "rb":
+            brain_cmd = "ruby"
+        else:
+            raise(Exception("Could not determine the brain file format from {}".format(brain_file)))
 
-        return brain(self)
+        return brain_cmd, brain_file
 
-    def update(self):
+    def get_info_line(self):
+        return "{} {} {} {} {} {}".format(self.x, self.y_offset, self.position, self.state, self.health, self.is_ready())
+
+    def is_ready(self):
+        return self.timeout <= 0 and self.blocking <= 0 and self.disabled == False
+
+    def update(self, action):
 
         self.update_gravity()
 
         if self.enemy.disabled:
             self.switchAnim("VICTORY")
-        elif self.timeout <= 0 and self.blocking <= 0 and self.disabled == False:
-            self.brain.giveOptions(self.get_options())
-            action = self.brain.getAction()
+        elif self.is_ready():
             if action in self.get_options():
                 if action == "stand":
                     self.stand()
@@ -91,14 +96,22 @@ class Fighter:
             elif action == None:
                 pass
             else:
-                print("Action is not available: {}".format(str(action)), file=sys.stderr)
+                raise(Exception("Action {} is currently not a valid action. Valid actions are={}".format(action, self.get_options())))
         else:
             self.timeout -= 1
             self.blocking -= 1
 
     def get_options(self):
         if self.position == "stand":
-            return ["jump", "crouch", "block", "punch", "stand", "walk_left", "walk_right"]
+            return [
+                "jump",
+                "crouch",
+                "block",
+                "punch",
+                "stand",
+                "walk_left",
+                "walk_right",
+            ]
         elif self.position == "jump":
             return ["block", "punch"]
         elif self.position == "crouch":
@@ -145,10 +158,18 @@ class Fighter:
             self.enemy.get_hit(self.punch_damage)
 
     def canHit(self):
-        crouch_hit_standing = self.position == "crouch" and self.enemy.position == "standing"
-        standing_hit_jump = self.position == "standing" and self.enemy.position == "jump"
+        crouch_hit_standing = (
+            self.position == "crouch" and self.enemy.position == "standing"
+        )
+        standing_hit_jump = (
+            self.position == "standing" and self.enemy.position == "jump"
+        )
         if abs(self.getDist()) <= self.hitDistance:
-            return crouch_hit_standing or standing_hit_jump or self.position == self.enemy.position
+            return (
+                crouch_hit_standing
+                or standing_hit_jump
+                or self.position == self.enemy.position
+            )
 
     def getDist(self):
         return self.enemy.getPos()[0] - self.getPos()[0]

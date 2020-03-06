@@ -29,19 +29,16 @@ def resize_image(img, xx, yy):
 
 
 def load_image(path):
-    return Image.open(path).convert('RGBA')
+    return Image.open(path).convert("RGBA")
 
 
 def animate_sequence(images, name):
-    images[0].save(name,
-                   save_all=True,
-                   append_images=images[1:],
-                   duration=75,
-                   loop=1)
+    images[0].save(name, save_all=True, append_images=images[1:], duration=75, loop=1)
+
 
 def place_on_background(background, img, x, y):
     copy = background.copy()
-    copy.paste(img, (x,y), mask=img)
+    copy.paste(img, (x, y), mask=img)
     return copy
 
 

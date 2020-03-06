@@ -1,6 +1,5 @@
 import glob
 import os
-import random
 
 from PIL import Image
 
@@ -38,7 +37,7 @@ def animate_sequence(images, name):
                    save_all=True,
                    append_images=images[1:],
                    duration=75,
-                   loop=0)
+                   loop=1)
 
 def place_on_background(background, img, x, y):
     copy = background.copy()

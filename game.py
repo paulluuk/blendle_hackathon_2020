@@ -1,6 +1,6 @@
 import random
 
-from blendle_hackathon_2020 import fighter, animate
+import fighter, animate
 
 
 class Game:
@@ -37,12 +37,20 @@ class Game:
             if f.isFlipped(): img = animate.flip(img)
             image = animate.place_on_background(image, img, f.x, f.y - img.size[1] - f.y_offset)
         self.images += [image]
+        if self.fighter1.health <= 0 or self.fighter2.health <= 0 or len(self.images) > 2000:
+            return False
+        else:
+            return True
 
 
 f1 = fighter.Fighter("example_fighter")
 f2 = fighter.Fighter("example_fighter")
 game = Game(f1, f2)
 
-for i in range(1000):
+# while the fight lasts
+while game.update():
+    pass
+# add a few more shots for the ending
+for i in range(25):
     game.update()
 animate.animate_sequence(game.images, "battle.gif")

@@ -3,7 +3,7 @@ import os
 import random
 import sys
 
-from blendle_hackathon_2020 import animate
+import animate
 
 
 class Fighter:

@@ -1,4 +1,4 @@
-import random, os
+import random, os, time
 
 import animate, comms
 
@@ -75,10 +75,13 @@ class Game:
                 image, img, f.x, f.y - img.size[1] - f.y_offset
             )
         self.images += [image]
+
+        # let the game continue as long as one of them is battle ready
+        # unless the game becomes really, really long
         if (
             self.fighter1.health <= 0
             or self.fighter2.health <= 0
-            or len(self.images) > 2000
+            or len(self.images) > 500
         ):
             return False
         else:

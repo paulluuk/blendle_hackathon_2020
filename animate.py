@@ -33,6 +33,11 @@ def load_image(path):
 
 
 def animate_sequence(images, name):
+    # make the images much smaller before saving them
+    width,height = images[0].size
+    height_per_width = 100*height/width
+    desired_width = 300
+    images = [resize_image(image, desired_width, int(height_per_width*desired_width/100)) for image in images]
     images[0].save(name, save_all=True, append_images=images[1:], duration=75, loop=1)
 
 

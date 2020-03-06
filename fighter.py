@@ -63,6 +63,8 @@ class Fighter:
                     )
                 )
             )
+        else:
+            brain_file = os.path.join(path, "code", brain_file)
         if not fighter_name:
             raise (
                 Exception("Did not specify a bot name inside {}".format(brain_config))
@@ -131,7 +133,7 @@ class Fighter:
             else:
                 raise (
                     Exception(
-                        "Action {} is currently not a valid action. Valid actions are={}".format(
+                        "Action '{}' is currently not a valid action. Valid actions are={}".format(
                             action, self.get_options()
                         )
                     )

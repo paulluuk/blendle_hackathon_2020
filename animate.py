@@ -38,6 +38,13 @@ def animate_sequence(images, name):
     height_per_width = 100*height/width
     desired_width = 300
     images = [resize_image(image, desired_width, int(height_per_width*desired_width/100)) for image in images]
+
+    steps = os.path.split(name)
+    path = ""
+    for step in steps[:-1]:
+        path = os.path.join(path, step)
+        if not os.path.exists(path):
+            os.mkdir(path)
     images[0].save(name, save_all=True, append_images=images[1:], duration=75, loop=1)
 
 

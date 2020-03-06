@@ -1,6 +1,6 @@
-import random
+import random, os
 
-import fighter, animate, comms
+import animate, comms
 
 
 class Game:
@@ -36,10 +36,12 @@ class Game:
         self.images = []
 
         # setup communications with both fighters (subprocesses)
-        self.fighter1comms = comms.InteractiveSession(self.fighter1.brainCMD,
-                                                      self.fighter1.brainPATH)
-        self.fighter2comms = comms.InteractiveSession(self.fighter2.brainCMD,
-                                                      self.fighter2.brainPATH)
+        self.fighter1comms = comms.InteractiveSession(
+            self.fighter1.brain_cmd, self.fighter1.brain_path
+        )
+        self.fighter2comms = comms.InteractiveSession(
+            self.fighter2.brain_cmd, self.fighter2.brain_path
+        )
 
     def update(self):
 
@@ -74,9 +76,9 @@ class Game:
             )
         self.images += [image]
         if (
-                self.fighter1.health <= 0
-                or self.fighter2.health <= 0
-                or len(self.images) > 2000
+            self.fighter1.health <= 0
+            or self.fighter2.health <= 0
+            or len(self.images) > 2000
         ):
             return False
         else:
@@ -94,10 +96,9 @@ class Game:
         self.fighter1comms.terminate()
         self.fighter2comms.terminate()
 
-        animate.animate_sequence(game.images, "battle.gif")
-
-
-f1 = fighter.Fighter("example_fighter")
-f2 = fighter.Fighter("example_fighter")
-game = Game(f1, f2)
-game.process()
+        animate.animate_sequence(
+            self.images,
+            os.path.join(
+                "battles", "{}_vs_{}.gif".format(self.fighter1.name, self.fighter2.name)
+            ),
+        )

@@ -1,65 +1,98 @@
 import glob
 import os
 import random
-import sys
 
 import animate
 
 
 class Fighter:
     def __init__(self, path):
+        config = self.getConfig(path)
+
         self.animations = self.createAnimations(path)
-        self.x = 0
-        self.y = 0
-        self.brainCMD,self.brainPATH = self.createBrain(path)
-        self.minX = 0
-        self.maxX = 0
-        self.health = 100
-        self.punch_damage = 10
-        self.hitDistance = 100  # how far your hits reach
+        self.backgrounds = self.loadBackgrounds(path)
+
         self.block_time = 4
-        self.timeout_time_default = 5
-        self.timeout_time_block = 8
-        self.timeout_time_punch = 10
-        self.timeout_time_get_hit = 9
-        self.y_offset = 0
-        self.walk_speed = 20
+        self.blocking = 0
+        self.brain_cmd = config["cmd"]
+        self.brain_path = config["path"]
+        self.disabled = False
+        self.enemy = None
+        self.health = 100
+        self.hitDistance = 100  # how far your hits reach
         self.jump_speed = 30
         self.jump_speed_now = 0
-        self.state = "IDLE"
         self.key = 0
+        self.maxX = 0
+        self.minX = 0
+        self.name = config["name"]
+        self.path = path
         self.position = "stand"
-        self.backgrounds = self.loadBackgrounds(path)
-        self.enemy = None
+        self.punch_damage = 10
+        self.state = "IDLE"
         self.timeout = 0
-        self.blocking = 0
-        self.disabled = False
+        self.timeout_time_block = 8  # how long we have to wait after blocking
+        self.timeout_time_default = 5  # how long we have to wait after movement
+        self.timeout_time_get_hit = 9  # how long we have to wait after getting hit
+        self.timeout_time_punch = 10  # how long we have to wait after punching
+        self.walk_speed = 30  # how quickly we move
+        self.x = 0
+        self.y = 0
+        self.y_offset = 0
 
-    def createBrain(self, path):
+    def getConfig(self, path):
         brain_config = os.path.join(path, "code", "config.txt")
-        brain_file = None
+        data = {}
         with open(brain_config, "r") as config:
             lines = config.readlines()
             for line in lines:
                 if line.startswith("#"):
                     pass
                 else:
-                    brain_file = line.strip()
-                    break
+                    key, value = line.strip().split("=")
+                    data[key] = value
+
+        brain_file = data["file"]
+        fighter_name = data["name"]
+
         if not brain_file:
-            raise(Exception("Could not determine a brain file location inside {}".format(brain_config)))
+            raise (
+                Exception(
+                    "Could not determine a brain file location inside {}".format(
+                        brain_config
+                    )
+                )
+            )
+        if not fighter_name:
+            raise (
+                Exception("Did not specify a bot name inside {}".format(brain_config))
+            )
+
         extension = brain_file.split(".")[-1]
         if extension == "py":
             brain_cmd = "python"
         elif extension == "rb":
             brain_cmd = "ruby"
         else:
-            raise(Exception("Could not determine the brain file format from {}".format(brain_file)))
+            raise (
+                Exception(
+                    "Could not determine the brain file format from {}".format(
+                        brain_file
+                    )
+                )
+            )
 
-        return brain_cmd, brain_file
+        return {"cmd": brain_cmd, "path": brain_file, "name": fighter_name}
 
     def get_info_line(self):
-        return "{} {} {} {} {} {}".format(self.x, self.y_offset, self.position, self.state, self.health, self.is_ready())
+        return "{} {} {} {} {} {}".format(
+            self.x,
+            self.y_offset,
+            self.position,
+            self.state,
+            self.health,
+            self.is_ready(),
+        )
 
     def is_ready(self):
         return self.timeout <= 0 and self.blocking <= 0 and self.disabled == False
@@ -96,7 +129,13 @@ class Fighter:
             elif action == None:
                 pass
             else:
-                raise(Exception("Action {} is currently not a valid action. Valid actions are={}".format(action, self.get_options())))
+                raise (
+                    Exception(
+                        "Action {} is currently not a valid action. Valid actions are={}".format(
+                            action, self.get_options()
+                        )
+                    )
+                )
         else:
             self.timeout -= 1
             self.blocking -= 1

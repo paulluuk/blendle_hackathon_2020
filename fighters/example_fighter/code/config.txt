@@ -1,0 +1,7 @@
+# please write down which file the game should use as the fighter's brain.
+# you can write any logic you want in different files, but this file
+# will be the file to handle input/output with the game's comm system.
+# the game will figure out whether it's ruby or python based on the file extension
+file=brain_python.py
+# Add a name for your bot
+name=Template Bot

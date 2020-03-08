@@ -1,5 +1,5 @@
-from subprocess import Popen, PIPE
-
+from subprocess import Popen, PIPE, check_output
+from threading import Timer
 
 class InteractiveSession:
     def __init__(self, python_or_ruby, path):
@@ -17,9 +17,27 @@ class InteractiveSession:
             stderr=PIPE
         )
 
+    def read_within_time(self, source, seconds):
+        # give the process 5 seconds to respond, otherwise we kill it.
+        timer = Timer(interval=seconds, function=self.terminate)
+        try:
+            timer.start()
+            stdout = source.readline()
+            response = stdout.decode("utf-8").strip()
+        finally:
+            timer.cancel()
+        return response
+
     def read(self):
         # read from the subprocess' output
-        response = self.process.stdout.readline().decode("utf-8").strip()
+
+        response = self.read_within_time(self.process.stdout, 5)
+        if len(response) == 0:
+            response_error = self.read_within_time(self.process.stderr, 1)
+            if len(response_error) > 0:
+                raise(Exception("Fighter failed to respond in time. It returned this error: {}".format(response_error)))
+            else:
+                raise(Exception("Fighter failed to respond in time. It returned no error."))
         print("(output) {}".format(response))
         return response
 

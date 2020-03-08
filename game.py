@@ -48,14 +48,18 @@ class Game:
         # get the current information about the fighters
         status1 = self.fighter1.get_info_line()
         status2 = self.fighter2.get_info_line()
+        options1 = " ".join(self.fighter1.get_options())
+        options2 = " ".join(self.fighter2.get_options())
 
         # send the information to fighter1
         self.fighter1comms.write(status1)  # own info first
         self.fighter1comms.write(status2)  # enemy fighter second
+        self.fighter1comms.write(options1)  # give them their available options
 
         # send the information to fighter2
         self.fighter2comms.write(status2)  # own info first
         self.fighter2comms.write(status1)  # enemy fighter second
+        self.fighter2comms.write(options2)  # give them their available options
 
         # ask both fighters what they want to do
         action1 = self.fighter1comms.read()

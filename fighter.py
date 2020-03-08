@@ -159,7 +159,7 @@ class Fighter:
             return ["stand", "block", "punch", "crouch"]
 
     def update_gravity(self):
-        if self.jump_speed_now != 0:
+        if self.y_offset >= 0 or self.jump_speed_now != 0:
             self.y_offset += self.jump_speed_now
             self.jump_speed_now -= 3
         if self.y_offset < 0:

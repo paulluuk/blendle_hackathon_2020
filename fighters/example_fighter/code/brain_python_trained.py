@@ -87,7 +87,7 @@ def run():
     # your available options to choose from
     options = input().split(" ")
 
-    # randomly choose one of the available options
+    # the choice made by your bot
     data_out = bot_runner(your_info, enemy_info, options)
 
     # output a response

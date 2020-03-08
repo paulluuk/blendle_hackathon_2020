@@ -29,7 +29,7 @@ def run()
     # your available options to choose from
     options = gets.split(" ")
 
-    # randomly choose one of the available options
+    # the choice made by your bot
     output = your_function_here(your_info, enemy_info, options)
 
     # output a response

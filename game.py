@@ -1,6 +1,8 @@
-import random, os, time
+import os
+import random
 
-import animate, comms
+import animate
+import comms
 
 
 class Game:
@@ -26,6 +28,9 @@ class Game:
         # make sure the fighters know who they both are
         self.fighter1.setEnemy(self.fighter2)
         self.fighter2.setEnemy(self.fighter1)
+
+        # flip the second fighter to face the first
+        self.fighter2.flipped = True
 
         # use a background from either fighter as the backdrop
         self.background = random.choice(
@@ -64,10 +69,13 @@ class Game:
         # ask both fighters what they want to do
         action1 = self.fighter1comms.read()
         action2 = self.fighter2comms.read()
+        fighters_with_actions = list(zip([self.fighter1, self.fighter2], [action1, action2]))
 
-        # execute the actions to update the game
-        self.fighter1.update(action1)
-        self.fighter2.update(action2)
+        # the fighters do their actions in random order,
+        # so that both fighters have an element of luck.
+        random.shuffle(fighters_with_actions)
+        for f, action in fighters_with_actions:
+            f.update(action)
 
         # create image of current scene
         image = self.background.copy()
@@ -83,9 +91,9 @@ class Game:
         # let the game continue as long as one of them is battle ready
         # unless the game becomes really, really long
         if (
-            self.fighter1.health <= 0
-            or self.fighter2.health <= 0
-            or len(self.images) > 500
+                self.fighter1.health <= 0
+                or self.fighter2.health <= 0
+                or len(self.images) > 500
         ):
             return False
         else:
@@ -93,16 +101,19 @@ class Game:
 
     def process(self):
 
-        # while the fight lasts
-        while self.update():
-            pass
-        # add a few more shots for the ending
-        for i in range(25):
-            self.update()
+        try:
+            # while the fight lasts
+            while self.update():
+                pass
+            # add a few more shots for the ending
+            for i in range(50):
+                self.update()
+        finally:
+            # whatever happens, terminate the subprocesses.
+            self.fighter1comms.terminate()
+            self.fighter2comms.terminate()
 
-        self.fighter1comms.terminate()
-        self.fighter2comms.terminate()
-
+        print("Generating image sequence..")
         animate.animate_sequence(
             self.images,
             os.path.join(

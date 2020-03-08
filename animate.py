@@ -36,7 +36,7 @@ def animate_sequence(images, name):
     # make the images much smaller before saving them
     width,height = images[0].size
     height_per_width = 100*height/width
-    desired_width = 300
+    desired_width = 700
     images = [resize_image(image, desired_width, int(height_per_width*desired_width/100)) for image in images]
 
     steps = os.path.split(name)

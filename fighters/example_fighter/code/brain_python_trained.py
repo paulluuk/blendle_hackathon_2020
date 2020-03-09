@@ -12,10 +12,8 @@ def within_range(your_position, enemy_position):
 
 def facing_enemy(your_position, enemy_position, your_facing):
     """Am I turned towards my enemy?"""
-    return (
-            (your_position <= enemy_position and your_facing == "right")
-            or
-            (your_position >= enemy_position and your_facing == "left")
+    return (your_position <= enemy_position and your_facing == "right") or (
+        your_position >= enemy_position and your_facing == "left"
     )
 
 
@@ -49,7 +47,9 @@ def bot_runner(your_info, enemy_info, options):
 
     if facing_enemy(x1, x2, facing1) and within_range(x1, x2):
 
-        if enemy_is_ready and facing_enemy(x2, x1, facing2):  # the enemy is facing me and ready to hit
+        if enemy_is_ready and facing_enemy(
+            x2, x1, facing2
+        ):  # the enemy is facing me and ready to hit
             action = block(options)
             if action is not None:
                 return action
@@ -78,11 +78,27 @@ def run():
 
     # receive information about your fighter
     x1, y1, facing1, state1, anim1, health1, ready1 = input().split(" ")
-    your_info = (int(x1), int(y1), facing1, state1, anim1, int(health1), bool(ready1 == "True"))
+    your_info = (
+        int(x1),
+        int(y1),
+        facing1,
+        state1,
+        anim1,
+        int(health1),
+        bool(ready1 == "True"),
+    )
 
     # receive information about the enemy fighter
     x2, y2, facing2, state2, anim2, health2, ready2 = input().split(" ")
-    enemy_info = (int(x2), int(y2), facing2, state2, anim2, int(health2), bool(ready2 == "True"))
+    enemy_info = (
+        int(x2),
+        int(y2),
+        facing2,
+        state2,
+        anim2,
+        int(health2),
+        bool(ready2 == "True"),
+    )
 
     # your available options to choose from
     options = input().split(" ")

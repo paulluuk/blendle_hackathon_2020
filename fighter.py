@@ -177,7 +177,7 @@ class Fighter:
 
     def walk_right(self):
         if self.x < self.enemy.x:
-            furthestX = self.enemy.x - int(self.hitDistance*0.9)
+            furthestX = self.enemy.x - int(self.hitDistance * 0.9)
         else:
             furthestX = self.maxX
         if self.position == "stand":
@@ -188,7 +188,7 @@ class Fighter:
 
     def walk_left(self):
         if self.x > self.enemy.x:
-            furthestX = self.enemy.x + int(self.hitDistance*0.9)
+            furthestX = self.enemy.x + int(self.hitDistance * 0.9)
         else:
             furthestX = self.minX
         if self.position == "stand":
@@ -225,13 +225,14 @@ class Fighter:
 
         correct_distance = abs(self.getDist()) <= self.hitDistance
 
-        correct_position = ((self.position == "crouch" and self.enemy.position == "standing")
-                            or (self.position == "standing" and self.enemy.position == "jump")
-                            or (self.position == self.enemy.position))
+        correct_position = (
+            (self.position == "crouch" and self.enemy.position == "standing")
+            or (self.position == "standing" and self.enemy.position == "jump")
+            or (self.position == self.enemy.position)
+        )
 
-        correct_facing = (
-                (self.x <= self.enemy.x and not self.flipped)
-                or (self.x >= self.enemy.x and self.flipped)
+        correct_facing = (self.x <= self.enemy.x and not self.flipped) or (
+            self.x >= self.enemy.x and self.flipped
         )
 
         return correct_distance and correct_position and correct_facing
@@ -257,7 +258,7 @@ class Fighter:
 
     def get_hit(self, damage):
         if self.blocking > 0:
-            pass #ignore damage while blocking
+            pass  # ignore damage while blocking
         else:
             self.timeout = self.timeout_time_get_hit
             self.health -= damage
@@ -295,11 +296,17 @@ class Fighter:
         img = series[self.key]
         self.key += 1
         if self.key >= len(series):
-            if self.current_anim.lower() == "knockdown" or self.current_anim.lower() == "victory":
+            if (
+                self.current_anim.lower() == "knockdown"
+                or self.current_anim.lower() == "victory"
+            ):
                 self.key = len(series) - 1
             elif "block" in self.current_anim.lower():
                 self.key = len(series) - 1
-            elif "punch" in self.current_anim.lower() or "hit" in self.current_anim.lower():
+            elif (
+                "punch" in self.current_anim.lower()
+                or "hit" in self.current_anim.lower()
+            ):
                 if "crouch" in self.current_anim.lower():
                     self.switchAnim("crouch")
                 if "jump" in self.current_anim.lower():

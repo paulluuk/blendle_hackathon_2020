@@ -12,7 +12,7 @@ def get_camera():
 
 def capture_image(cam, path, num):
     _, frame = cam.read()
-    im = Image.fromarray(frame, 'RGB')
+    im = Image.fromarray(frame, "RGB")
     im = im.resize((500, 500))
     im.save(os.path.join(path, str(num) + ".png"), "PNG")
     return frame
@@ -28,16 +28,31 @@ def load_preview_images(anim):
 
 
 def load_image(path):
-    return numpy.array(Image.open(path).convert('RGB').resize((500, 500), Image.NEAREST))
+    return numpy.array(
+        Image.open(path).convert("RGB").resize((500, 500), Image.NEAREST)
+    )
 
 
 def run():
     cam = get_camera()
 
-    for anim in ["nothing", "block", "crouch", "crouch_block",
-                 "crouch_hit", "crouch_punch", "hit", "idle",
-                 "jump", "jump_hit", "jump_punch", "knockdown",
-                 "punch", "victory", "walk"]:
+    for anim in [
+        "nothing",
+        "block",
+        "crouch",
+        "crouch_block",
+        "crouch_hit",
+        "crouch_punch",
+        "hit",
+        "idle",
+        "jump",
+        "jump_hit",
+        "jump_punch",
+        "knockdown",
+        "punch",
+        "victory",
+        "walk",
+    ]:
         i = 0
         path = os.path.join("captured", anim)
         os.makedirs(path, exist_ok=True)
@@ -49,25 +64,28 @@ def run():
             idx += 1
             if idx >= len(preview_images):
                 idx = 0
-            if cv2.waitKey(10) == ord('q'):
+            if cv2.waitKey(10) == ord("q"):
                 cancel = True
                 break
-        if cancel: break
+        if cancel:
+            break
         img = load_image(os.path.join("helpers", "get_ready.png"))
         for _ in range(100):
             cv2.imshow("Capturing", img)
-            if cv2.waitKey(10) == ord('q'):
+            if cv2.waitKey(10) == ord("q"):
                 cancel = True
                 break
-        if cancel: break
+        if cancel:
+            break
         while i < 100:
             frame = capture_image(cam, path, i)
             cv2.imshow("Capturing", frame)
             i += 1
-            if cv2.waitKey(10) == ord('q'):
+            if cv2.waitKey(10) == ord("q"):
                 cancel = True
                 break
-        if cancel: break
+        if cancel:
+            break
 
     cam.release()
 

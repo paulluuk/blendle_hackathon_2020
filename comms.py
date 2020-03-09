@@ -1,6 +1,7 @@
 from subprocess import Popen, PIPE
 from threading import Timer
 
+
 class InteractiveSession:
     def __init__(self, python_or_ruby, path):
         # this subprocess is pretty shake, it will
@@ -11,12 +12,7 @@ class InteractiveSession:
     def start(self, execute_cmd):
         print("Starting fighter communications..")
         # start a new subprocess
-        return Popen(
-            execute_cmd,
-            stdin=PIPE,
-            stdout=PIPE,
-            stderr=PIPE
-        )
+        return Popen(execute_cmd, stdin=PIPE, stdout=PIPE, stderr=PIPE)
 
     def read_within_time(self, source, seconds):
         # give the process 5 seconds to respond, otherwise we kill it.
@@ -28,7 +24,9 @@ class InteractiveSession:
                 response = stdout.decode("utf-8").strip()
             elif source == self.process.stderr:
                 stderr = source.readlines()
-                response = "\n"+"\n".join([line.decode("utf-8").strip() for line in stderr])
+                response = "\n" + "\n".join(
+                    [line.decode("utf-8").strip() for line in stderr]
+                )
         finally:
             timer.cancel()
         return response
@@ -40,9 +38,19 @@ class InteractiveSession:
         if len(response) == 0:
             response_error = self.read_within_time(self.process.stderr, 1)
             if len(response_error) > 0:
-                raise(Exception("Fighter failed to respond in time. It returned this error: {}".format(response_error)))
+                raise (
+                    Exception(
+                        "Fighter failed to respond in time. It returned this error: {}".format(
+                            response_error
+                        )
+                    )
+                )
             else:
-                raise(Exception("Fighter failed to respond in time. It returned no error."))
+                raise (
+                    Exception(
+                        "Fighter failed to respond in time. It returned no error."
+                    )
+                )
         return response
 
     def write(self, message):

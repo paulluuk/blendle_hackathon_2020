@@ -69,7 +69,9 @@ class Game:
         # ask both fighters what they want to do
         action1 = self.fighter1comms.read()
         action2 = self.fighter2comms.read()
-        fighters_with_actions = list(zip([self.fighter1, self.fighter2], [action1, action2]))
+        fighters_with_actions = list(
+            zip([self.fighter1, self.fighter2], [action1, action2])
+        )
 
         # the fighters do their actions in random order,
         # so that both fighters have an element of luck.
@@ -91,9 +93,9 @@ class Game:
         # let the game continue as long as one of them is battle ready
         # unless the game becomes really, really long
         if (
-                self.fighter1.health <= 0
-                or self.fighter2.health <= 0
-                or len(self.images) > 500
+            self.fighter1.health <= 0
+            or self.fighter2.health <= 0
+            or len(self.images) > 500
         ):
             return False
         else:

@@ -3,7 +3,6 @@ import os
 
 import pygame
 
-
 DIR = os.path.dirname(__file__)
 
 

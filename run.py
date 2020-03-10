@@ -2,7 +2,6 @@ import glob, os, random
 
 import game, fighter
 
-
 DIR = os.path.dirname(__file__)
 
 # get a list of available fighters

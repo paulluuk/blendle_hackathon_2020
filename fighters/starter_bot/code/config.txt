@@ -1,0 +1,4 @@
+# the file of your bot's brain
+file=brain.py
+# Add a name for your bot
+name=Starter Bot

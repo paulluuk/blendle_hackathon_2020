@@ -118,11 +118,11 @@ class Game:
             self.fighter2comms.terminate()
 
         print("Generating image sequence..")
+        pathname = os.path.join(
+            DIR,
+            "battles",
+            "{}_vs_{}.gif".format(self.fighter1.name, self.fighter2.name),
+        )
         animate.animate_sequence(
-            self.images,
-            os.path.join(
-                DIR,
-                "battles",
-                "{}_vs_{}.gif".format(self.fighter1.name, self.fighter2.name),
-            ),
+            self.images, pathname,
         )

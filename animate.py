@@ -47,7 +47,7 @@ def animate_sequence(images, name):
     for step in steps[:-1]:
         path = os.path.join(path, step)
         if not os.path.exists(path):
-            os.mkdir(path)
+            os.makedirs(os.path.dirname(path), exist_ok=True)
     images[0].save(name, save_all=True, append_images=images[1:], duration=75, loop=1)
 
 

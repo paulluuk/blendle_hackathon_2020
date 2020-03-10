@@ -9,7 +9,7 @@ class Fighter:
     def __init__(self, path):
         config = self.getConfig(path)
 
-        self.block_time = 4
+        self.block_time = 13
         self.blocking = 0
         self.brain_cmd = config["cmd"]
         self.brain_path = config["path"]
@@ -29,10 +29,10 @@ class Fighter:
         self.punch_damage = 10
         self.current_anim = "IDLE"
         self.timeout = 0
-        self.timeout_time_block = 2  # how long we have to wait after blocking
-        self.timeout_time_default = 1  # how long we have to wait after movement
-        self.timeout_time_get_hit = 3  # how long we have to wait after getting hit
-        self.timeout_time_punch = 3  # how long we have to wait after punching
+        self.timeout_time_block = 14  # how long we have to wait after blocking
+        self.timeout_time_default = 2  # how long we have to wait after movement
+        self.timeout_time_get_hit = 10  # how long we have to wait after getting hit
+        self.timeout_time_punch = 20  # how long we have to wait after punching
         self.walk_speed = 30  # how quickly we move
         self.x = 0
         self.y = 0
@@ -104,14 +104,14 @@ class Fighter:
 
     def update(self, action):
 
-        self.update_gravity()
-
         if self.disabled:
+            # we lost :(
             self.switchAnim("knockdown")
-            return
         elif self.enemy.disabled:
+            # we won :)
             self.switchAnim("victory")
         elif self.is_ready():
+            # we're ready to make a amove
             if action in self.get_options():
                 if action == "stand":
                     self.stand()
@@ -134,19 +134,21 @@ class Fighter:
                 elif action == "walk_right":
                     self.walk_right()
                     self.timeout = self.timeout_time_default
-            elif action == None:
-                pass
             else:
-                raise (
-                    Exception(
-                        "Action '{}' is currently not a valid action. Valid actions are={}".format(
-                            action, self.get_options()
-                        )
+                # if you do invalid stuff, you get punished for it.
+                self.switchAnim("knockdown")
+                print(
+                    "Action '{}' is currently not a valid action. Valid actions are={}".format(
+                        action, self.get_options()
                     )
                 )
         else:
+            # we're not ready to make a move.
+            # ignore whatever the fighter says.
             self.timeout -= 1
             self.blocking -= 1
+
+        self.update_gravity()
 
     def get_options(self):
         if self.position == "stand":
@@ -158,11 +160,12 @@ class Fighter:
                 "stand",
                 "walk_left",
                 "walk_right",
+                "wait",
             ]
         elif self.position == "jump":
-            return ["block", "punch"]
+            return ["punch", "wait"]
         elif self.position == "crouch":
-            return ["stand", "block", "punch", "crouch"]
+            return ["stand", "block", "punch", "crouch", "wait"]
 
     def update_gravity(self):
         if self.y_offset >= 0 or self.jump_speed_now != 0:
@@ -171,8 +174,9 @@ class Fighter:
         if self.y_offset < 0:
             self.jump_speed_now = 0
             self.y_offset = 0
-            self.position = "stand"
-            self.switchAnim("idle")
+            if self.position != "stand":
+                self.position = "stand"
+                self.switchAnim("idle")
         self.y_offset = int(self.y_offset)
 
     def walk_right(self):
@@ -275,7 +279,7 @@ class Fighter:
 
     def switchAnim(self, anim):
         anim = anim.lower()
-        if self.current_anim != anim:
+        if self.current_anim.lower() != anim:
             self.key = 0
             self.current_anim = anim
 
@@ -292,21 +296,25 @@ class Fighter:
         self.animations[name.lower()] = images
 
     def getImage(self):
+        # we loop through the animation whenever
+        # an image is requested from us.
         series = self.animations.get(self.current_anim.lower())
         img = series[self.key]
+        self.loop_animation(series)
+        return img
+
+    def loop_animation(self, series):
         self.key += 1
+
+        keep_last_anim = ["knockdown", "victory", "block"]
+        turn_away_anim = ["punch", "hit"]
+
         if self.key >= len(series):
-            if (
-                self.current_anim.lower() == "knockdown"
-                or self.current_anim.lower() == "victory"
-            ):
+            if self.current_anim.lower() == "block" and self.blocking <= 0:
+                self.switchAnim("idle")
+            elif any([anim in self.current_anim.lower() for anim in keep_last_anim]):
                 self.key = len(series) - 1
-            elif "block" in self.current_anim.lower():
-                self.key = len(series) - 1
-            elif (
-                "punch" in self.current_anim.lower()
-                or "hit" in self.current_anim.lower()
-            ):
+            elif any([anim in self.current_anim.lower() for anim in turn_away_anim]):
                 if "crouch" in self.current_anim.lower():
                     self.switchAnim("crouch")
                 if "jump" in self.current_anim.lower():
@@ -315,7 +323,6 @@ class Fighter:
                     self.switchAnim("idle")
             else:
                 self.key = 0
-        return img
 
     def setState(self, state):
         self.current_anim = state

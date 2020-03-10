@@ -2,8 +2,11 @@ import glob, os, random
 
 import game, fighter
 
+
+DIR = os.path.dirname(__file__)
+
 # get a list of available fighters
-fighters = glob.glob(os.path.join("fighters", "*"))
+fighters = glob.glob(os.path.join(DIR, "fighters", "*"))
 
 # create a fighting roster
 for fighter_path1 in fighters:

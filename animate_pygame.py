@@ -4,6 +4,9 @@ import os
 import pygame
 
 
+DIR = os.path.dirname(__file__)
+
+
 def convert_alpha(img):
     width, height = img.get_size()
     colorkey = img.get_at((0, 0))
@@ -22,7 +25,8 @@ def load_image(path):
 
 
 def get_animation_images(anim_path):
-    folder = os.path.join(anim_path, "*.png")
+
+    folder = os.path.join(DIR, anim_path, "*.png")
     paths = glob.glob(folder)
     return [convert_alpha(resize_image(load_image(i), 200, 200)) for i in sorted(paths)]
 
@@ -35,7 +39,7 @@ def resize_image(img, xx, yy):
 if __name__ == "__main__":
     pygame.init()
     screen = pygame.display.set_mode((300, 300))
-    path = os.path.join("fighters", "example_fighter", "animations", "hit")
+    path = os.path.join(DIR, "fighters", "example_fighter", "animations", "hit")
 
     imgs = get_animation_images(path)
     pygame.image.save(imgs[0], "tmp.png")

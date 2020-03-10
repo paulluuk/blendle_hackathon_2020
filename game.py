@@ -4,6 +4,8 @@ import random
 import animate
 import comms
 
+DIR = os.path.dirname(__file__)
+
 
 class Game:
     def __init__(self, fighter1, fighter2):
@@ -119,6 +121,8 @@ class Game:
         animate.animate_sequence(
             self.images,
             os.path.join(
-                "battles", "{}_vs_{}.gif".format(self.fighter1.name, self.fighter2.name)
+                DIR,
+                "battles",
+                "{}_vs_{}.gif".format(self.fighter1.name, self.fighter2.name),
             ),
         )

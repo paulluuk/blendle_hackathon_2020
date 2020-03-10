@@ -5,6 +5,8 @@ import cv2
 import numpy
 from PIL import Image
 
+DIR = os.path.dirname(__file__)
+
 
 def get_camera():
     return cv2.VideoCapture(0)
@@ -19,7 +21,7 @@ def capture_image(cam, path, num):
 
 
 def load_preview_images(anim):
-    path = os.path.join("helpers", anim, "*.png")
+    path = os.path.join(DIR, "helpers", anim, "*.png")
     files = glob.glob(path)
     preview_images = []
     for file in files:
@@ -54,11 +56,11 @@ def run():
         "walk",
     ]:
         i = 0
-        path = os.path.join("captured", anim)
+        path = os.path.join(DIR, "captured", anim)
         os.makedirs(path, exist_ok=True)
         preview_images = load_preview_images(anim)
-        idx = 0
         cancel = False
+        print(len(preview_images))
         for _ in range(100):
             cv2.imshow("Capturing", preview_images[idx])
             idx += 1
@@ -69,7 +71,9 @@ def run():
                 break
         if cancel:
             break
-        img = load_image(os.path.join("helpers", "get_ready.png"))
+
+        img = load_image(os.path.join(DIR, "helpers", "get_ready.png"))
+
         for _ in range(100):
             cv2.imshow("Capturing", img)
             if cv2.waitKey(10) == ord("q"):

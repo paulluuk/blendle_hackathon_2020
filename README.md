@@ -1,5 +1,5 @@
 # Blendle Hackfest 2020
-###who can program the best fighter?
+### who can program the best fighter?
 This project puts fighters together to fight eachother.
 The fighters are given some information about themselves and their opponents,
 and they have to use this information to defeat their enemies.
